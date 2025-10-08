@@ -1,0 +1,65 @@
+# 0. Išsinagrinėti kodą
+# raktažodžiai: FALSE, TRUE, NULL, RECT, WNDCLASS, struc, endif, ifndef,
+# operatoriai: =, ;, ?
+# kodo atskirimai: ENDS
+# reikšmė nesikeičia dėl mažųjų arba didžiųjų raidžių, naudojamas raidės ir skaičiai
+
+# 1. Apsibrėžti smulkiausius vienetus
+# 2. Apibrėžti elementarias struktūras (terminalus)
+# 3. Stambesnius sakinius
+# 4. Apibrėžti programos struktūrą (aukščiausio lygmens taisyklės)
+
+<program>                ::= { <code_element> }
+
+<code_element>           ::= <comment>
+                           | <keyword_definition>
+                           | <structure_definition>
+                           | <conditional_block>
+                           | <assignment>
+                           | <empty_line>
+
+<comment>                ::= ";" { <character> } <EOL>
+
+<keyword_definition>     ::= <keyword>
+                           | <keyword> <data_type> <constant>
+
+<constant> ::= <number> | "?"
+
+<structure_definition>   ::= <identifier> "struc" <structure_members> <identifier> "ends"
+<structure_members>      ::= { <structure_member> }
+<structure_member>       ::= <identifier> <data_type> [ <constant> ]
+
+<conditional_block>      ::= "IFNDEF" <identifier> <code_element> "ENDIF"
+                           | "ifndef" <identifier> <code_element> "endif"
+
+<assignment>      ::= <identifier> "=" <value>
+
+<value>                  ::= <number>
+                           | <identifier>
+                           | <data_type>
+
+<data_type>              ::= "dw" | "dd" | "db"
+<keyword>                ::= "FALSE" | "TRUE" | "NULL" | "RECT" | "WNDCLASS" | "struc" | "endif" | "ifndef" | "ends" | "IFNDEF"
+
+<identifier>             ::= <letter> { <letter> | <digit> }
+<number>                 ::= <digit> { <digit> }
+
+# Pats BNF apibrėžimas:
+<syntax>         ::= <rule> | <rule> <syntax>
+<rule>           ::= <opt-whitespace> "<" <rule-name> ">" <opt-whitespace> "::=" <opt-whitespace> <expression> <line-end>
+<opt-whitespace> ::= " " <opt-whitespace> | ""
+<expression>     ::= <list> | <list> <opt-whitespace> "|" <opt-whitespace> <expression>
+<line-end>       ::= <opt-whitespace> <EOL> | <line-end> <line-end>
+<list>           ::= <term> | <term> <opt-whitespace> <list>
+<term>           ::= <literal> | "<" <rule-name> ">"
+<literal>        ::= '"' <text1> '"' | "'" <text2> "'"
+<text1>          ::= "" | <character1> <text1>
+<text2>          ::= "" | <character2> <text2>
+<character>      ::= <letter> | <digit> | <symbol>
+<letter>         ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+<digit>          ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<symbol>         ::= "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
+<character1>     ::= <character> | "'"
+<character2>     ::= <character> | '"'
+<rule-name>      ::= <letter> | <rule-name> <rule-char>
+<rule-char>      ::= <letter> | <digit> | "-"
