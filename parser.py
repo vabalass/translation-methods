@@ -2,13 +2,12 @@
 # 1. konstruoti analizės lenteles ir FIRST, FOLLOW aibes
 # 2. rašyti rekursyvaus nusileidimo kodą
 # 3. pasiieškoti gero instrumento AST formavimui, arba tokį parašyti
+# Kodo kūrimui naudota Gemini.
 import re
 import sys
 import os
 
-# --- I. AST Mazgo Bazinė Klasė ---
 class ASTNode:
-    """Abstraktusis Sintaksės Medžio (AST) mazgo bazinė klasė."""
     def __init__(self, kind, children=None, value=None):
         self.kind = kind
         self.children = children if children is not None else []
@@ -19,8 +18,8 @@ class ASTNode:
             return f"<{self.kind} val='{self.value}'>"
         return f"<{self.kind} ({len(self.children)} children)>"
 
+    # gražiai atspausdina medį
     def pretty_print(self, indent=0):
-        """Funkcija, skirta gražiai atspausdinti medį (pagelbėja debug'inimui)."""
         print('    ' * indent + f"[{self.kind}]" + (f": {self.value}" if self.value is not None else ""))
         for child in self.children:
             if isinstance(child, ASTNode):
@@ -28,36 +27,31 @@ class ASTNode:
             else:
                 print('    ' * (indent + 1) + str(child))
 
-# --- II. Parserio Klasė (Rekursyvinis Nusileidimas) ---
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.current_token_index = 0
         self.errors = []
         
-        # Pirmą kartą praleidžiame visus nereikalingus žetonus (tarpus, komentarus, naujas eilutes)
+        # Pirmą kartą praleidžiame visus nereikalingus tokenus (tarpus, komentarus, naujas eilutes)
         self._skip_insignificant_tokens() 
 
     def _error(self, expected_kinds):
-        """Išmeta sintaksės klaidą su tikėtinais žetonų tipais."""
         if self.current_token_index < len(self.tokens):
             kind, value, line = self.tokens[self.current_token_index]
             error_msg = f"Sintaksės klaida eilutėje {line}: Lauktas {', '.join(expected_kinds)}, gautas {kind} ('{value}')."
         else:
-            # Reikšminga klaida: baigėsi failas per anksti
             error_msg = f"Sintaksės klaida: Lauktas {', '.join(expected_kinds)}, bet pasiekta kodo pabaiga."
         
         self.errors.append(error_msg)
         raise SyntaxError(error_msg)
 
     def _peek(self):
-        """Grąžina dabartinio žetono tipą, arba 'EOF'."""
         if self.current_token_index < len(self.tokens):
             return self.tokens[self.current_token_index][0]
         return "EOF"
     
     def _skip_insignificant_tokens(self):
-        """Perkelia indeksą per NEWLINE, SKIP ir COMMENT žetonus."""
         while self.current_token_index < len(self.tokens):
             kind = self.tokens[self.current_token_index][0]
             if kind in ("NEWLINE", "SKIP", "COMMENT"):
@@ -67,7 +61,6 @@ class Parser:
 
 
     def _consume(self, expected_kind):
-        """Suvartoja ir grąžina žetoną, jei jo tipas sutampa su tikėtinu, ir praleidžia tarpus."""
         if self._peek() == expected_kind:
             token = self.tokens[self.current_token_index]
             self.current_token_index += 1
@@ -77,7 +70,6 @@ class Parser:
         self._error([expected_kind])
 
     def parse(self):
-        """Pradeda analizavimą nuo <program> taisyklės."""
         try:
             ast = self.parse_program()
             # Patikrinimas ar pasiekta failo pabaiga po programos
@@ -91,17 +83,13 @@ class Parser:
                 print(f"-> {err}")
             return None
 
-    # --- BNF TAISYKLIŲ METODAI ---
-    # Taisyklė: <program> ::= <include_stmt>* <main_function>
-    # Dabar <include_stmt> yra NEPrivaloma!
+    # BNF TAISYKLĖS
     def parse_program(self):
         elements = []
         
-        # 1. <include_stmt>* (leidžiame kelias arba nulis include eilutes)
         while self._peek() == "INCLUDE_KW":
             elements.append(self.parse_include_stmt())
             
-        # 2. <main_function> (privalomas)
         if self._peek() == "INT_KW":
             elements.append(self.parse_main_function())
         else:
@@ -109,7 +97,6 @@ class Parser:
 
         return ASTNode("PROGRAM", children=elements)
 
-    # Taisyklė: <include_stmt> ::= INCLUDE_KW LT IDENTIFICATOR GT SEMICOLON (arba NEWLINE, bet čia NEWLINE bus praleistas)
     def parse_include_stmt(self):
         self._consume("INCLUDE_KW")
         self._consume("LT") # <
@@ -117,11 +104,9 @@ class Parser:
         header_name = self._consume("IDENTIFICATOR") # pvz., stdio.h
         
         self._consume("GT") # >
-        # Nereikalaujame NEWLINE, nes jis bus praleistas _skip_insignificant_tokens()
 
         return ASTNode("INCLUDE", value=header_name[1])
 
-    # Taisyklė: <main_function> ::= INT_KW MAIN_KW LPAREN RPAREN LBRACE <statement_list> RBRACE
     def parse_main_function(self):
         self._consume("INT_KW")
         self._consume("MAIN_KW")
@@ -132,7 +117,6 @@ class Parser:
         statements = self.parse_statement_list()
 
         self._consume("RBRACE")
-        # Nereikalaujame NEWLINE
 
         return ASTNode("FUNCTION_MAIN", children=statements, value="int main")
 
@@ -155,13 +139,11 @@ class Parser:
         elif token_kind == "PRINTF_KW":
             return self.parse_printf_call()
         else:
-            # Jei joks raktinis žodis neatpažįstamas, tikriname, ar tai ne RBRACE, kuris turėtų baigti statements
             if token_kind == "RBRACE":
                  self._error(["CONST_KW", "INT_KW", "RETURN_KW", "PRINTF_KW"])
             else:
                 self._error(["CONST_KW", "INT_KW", "RETURN_KW", "PRINTF_KW", "arba RBRACE"])
 
-    # Taisyklė: <declaration_assignment> ::= (CONST_KW)? INT_KW IDENTIFICATOR EQUAL <expression> SEMICOLON
     def parse_declaration_assignment(self):
         is_const = False
         if self._peek() == "CONST_KW":
@@ -175,7 +157,6 @@ class Parser:
                                   value=identifier[1], 
                                   children=[ASTNode("TYPE", value="int"), ASTNode("CONST", value=str(is_const))])
         
-        # Priskyrimo dalis (EQUAL <expression>)
         self._consume("EQUAL")
         expression = self.parse_expression()
         assignment_node.children.append(ASTNode("ASSIGN_VALUE", children=[expression]))
@@ -185,7 +166,6 @@ class Parser:
         return assignment_node
 
 
-    # Taisyklė: <printf_call> ::= PRINTF_KW LPAREN STRING_LITERAL COMMA IDENTIFICATOR RPAREN SEMICOLON
     def parse_printf_call(self):
         self._consume("PRINTF_KW")
         self._consume("LPAREN")
