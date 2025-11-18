@@ -10,8 +10,11 @@ Transliavimo metodai, lab. 4 - Balys Žalneravičius
     - visų išraiškų tipai
     - atminties kiekiai, reikalingi duomenims
 
-Rezultatas:
-Semantinė analizė: AST medžio apėjimas
-Simbolių lentelės reikalingos konteksto analizei apėjimo metu
-Tikriausiai grąžinti simbolių lentelę?
+Rezultatas: klaidų sąrašas arba patikrintą AST, jeigu viskas gerai.
+
+Darbo planas:
+1. padaryti, kad skaneris gražintų AST į failą
+2. Primti AST semantiniame analizatoriuje
+3. Patikrinti jį
+
 

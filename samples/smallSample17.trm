@@ -1,0 +1,240 @@
+;*************************************************************************
+;
+;       WINDOWS.INC - Windows assembly language structures & constants
+;
+; Copyright (c) 1985-1997, Microsoft Corp.	All rights reserved.
+;*************************************************************************
+;
+; Conditional Block includes:   (True states)
+;     NOTEXT - don't include TextMetric struc & text drawing modes & stock objs.
+;     NORASTOPS - don't include binary and ternary raster ops.
+;     NOVK      - don't include virtual key definitions
+;     NOMB      - don't include message box definitions
+;     NOWM      - don't include window messages
+;
+;
+FALSE   =       0
+TRUE    =       1
+NULL    =       0
+
+;*******************************************************************
+;
+;       Rectangle
+;
+;*******************************************************************
+
+RECT    struc
+        rcLeft          dw      ?
+        rcTop           dw      ?
+        rcRight         dw      ?
+        rcBottom        dw      ?
+RECT    ends
+
+;*******************************************************************
+;
+;  Window Class structure
+;
+;*******************************************************************
+
+WNDCLASS struc
+        clsStyle        dw      ?       ; class style
+        clsLpfnWndProc  dd      ?
+        clsCbClsExtra   dw      ?
+        clsCbWndExtra   dw      ?
+        clsHInstance    dw      ?       ; instance handle
+        clsHIcon        dw      ?       ; class icon handle
+        clsHCursor      dw      ?       ; class cursor handle
+        clsHbrBackground dw     ?       ; class background brush
+        clsLpszMenuName dd      ?       ; menu name
+        clsLpszClassName dd     ?       ; far ptr to class name
+WNDCLASS ends
+
+IFNDEF NOTEXT
+TEXTMETRIC struc
+    tmHeight	    dw	    ?
+    tmAscent	    dw	    ?
+    tmDescent	    dw	    ?
+    tmIntLeading    dw	    ?
+    tmExtLeading    dw	    ?
+    tmAveCharWidth  dw	    ?
+    tmMaxCharWidth  dw	    ?
+    tmWeight	    dw	    ?
+    tmItalic	    db	    ?
+    tmUnderlined    db	    ?
+    tmStruckOut     db	    ?
+    tmFirstChar     db	    ?
+    tmLastChar	    db	    ?
+    tmDefaultChar   db	    ?
+    tmBreakChar     db	    ?
+    tmPitch	    db	    ?
+    tmCharSet	    db	    ?
+    tmOverhang	    dw	    ?
+    tmAspectX	    dw	    ?
+    tmAspectY	    dw	    ?
+TEXTMETRIC ends
+
+LF_FACESIZE	EQU	32
+
+LOGFONT struc
+    lfHeight	      dw   ?
+    lfWidth	      dw   ?
+    lfEscapement      dw   ?
+    lfOrientation     dw   ?
+    lfWeight	      dw   ?
+    lfItalic	      db   ?
+    lfUnderline       db   ?
+    lfStrikeOut       db   ?
+    lfCharSet	      db   ?
+    lfOutPrecision    db   ?
+    lfClipPrecision   db   ?
+    lfQuality	      db   ?
+    lfPitchAndFamily  db   ?
+    lfFaceName	      db   LF_FACESIZE dup(?)
+LOGFONT ends
+
+LOGBRUSH struc
+    lbStyle         dw ?
+    lbColor         dd ?
+    lbHatch         dw ?
+LOGBRUSH ends
+
+;
+;  Text Drawing modes
+;
+TRANSPARENT     = 1
+OPAQUE          = 2
+;
+; Mapping Modes
+;
+MM_TEXT         =   1
+MM_LOMETRIC     =   2
+MM_HIMETRIC     =   3
+MM_LOENGLISH    =   4
+MM_HIENGLISH    =   5
+MM_TWIPS        =   6
+MM_ISOTROPIC    =   7
+MM_ANISOTROPIC  =   8
+;
+; Coordinate Modes
+;
+ABSOLUTE        =   1
+RELATIVE        =   2
+;
+;  Stock Logical Objects
+;
+WHITE_BRUSH         =  0
+LTGRAY_BRUSH        =  1
+GRAY_BRUSH          =  2
+DKGRAY_BRUSH        =  3
+BLACK_BRUSH         =  4
+NULL_BRUSH          =  5
+HOLLOW_BRUSH        =  5
+WHITE_PEN           =  6
+BLACK_PEN           =  7
+NULL_PEN            =  8
+DOT_MARKER          =  9
+OEM_FIXED_FONT      = 10
+ANSI_FIXED_FONT     = 11
+ANSI_VAR_FONT       = 12
+SYSTEM_FONT         = 13
+DEVICE_DEFAULT_FONT = 14
+DEFAULT_PALETTE     = 15
+SYSTEM_FIXED_FONT   = 16
+ENDIF
+;
+; Brush Styles
+;
+BS_SOLID        =   0
+BS_NULL         =   1
+BS_HOLLOW       =   BS_NULL
+BS_HATCHED      =   2
+BS_PATTERN      =   3
+BS_INDEXED      =   4
+BS_DIBPATTERN	=   5
+;
+; Hatch Styles
+;
+HS_HORIZONTAL   =   0       ; -----
+HS_VERTICAL     =   1       ; |||||
+HS_FDIAGONAL    =   2       ; \\\\\
+HS_BDIAGONAL    =   3       ; /////
+HS_CROSS        =   4       ; +++++
+HS_DIAGCROSS    =   5       ; xxxxx
+;
+; Pen Styles
+;
+PS_SOLID        =   0
+PS_DASH         =   1       ; -------
+PS_DOT          =   2       ; .......
+PS_DASHDOT      =   3       ; _._._._
+PS_DASHDOTDOT   =   4       ; _.._.._
+PS_NULL         =   5
+PS_INSIDEFRAME  =   6
+;
+; Device Parameters for GetDeviceCaps()
+;
+DRIVERVERSION =0     ; Device driver version
+TECHNOLOGY    =2     ; Device classification
+HORZSIZE      =4     ; Horizontal size in millimeters
+VERTSIZE      =6     ; Vertical size in millimeters
+HORZRES       =8     ; Horizontal width in pixels
+VERTRES       =10    ; Vertical width in pixels
+BITSPIXEL     =12    ; Number of bits per pixel
+PLANES        =14    ; Number of planes
+NUMBRUSHES    =16    ; Number of brushes the device has
+NUMPENS       =18    ; Number of pens the device has
+NUMMARKERS    =20    ; Number of markers the device has
+NUMFONTS      =22    ; Number of fonts the device has
+NUMCOLORS     =24    ; Number of colors the device supports
+PDEVICESIZE   =26    ; Size required for device descriptor
+CURVECAPS     =28    ; Curve capabilities
+LINECAPS      =30    ; Line capabilities
+POLYGONALCAPS =32    ; Polygonal capabilities
+TEXTCAPS      =34    ; Text capabilities
+CLIPCAPS      =36    ; Clipping capabilities
+RASTERCAPS    =38    ; Bitblt capabilities
+ASPECTX       =40    ; Length of the X leg
+ASPECTY       =42    ; Length of the Y leg
+ASPECTXY      =44    ; Length of the hypotenuse
+
+LOGPIXELSX    =88    ; Logical pixels/inch in X
+LOGPIXELSY    =90    ; Logical pixels/inch in Y
+
+SIZEPALETTE   =104   ; Number of entries in physical palette
+NUMRESERVED   =106   ; Number of reserved entries in palette
+COLORRES      =108   ; Actual color resolution
+;
+ifndef NOGDICAPMASKS
+;
+; Device Capability Masks:
+;
+; Device Technologies
+DT_PLOTTER       =   0  ; /* Vector plotter                   */
+DT_RASDISPLAY    =   1  ; /* Raster display                   */
+DT_RASPRINTER    =   2  ; /* Raster printer                   */
+DT_RASCAMERA     =   3  ; /* Raster camera                    */
+DT_CHARSTREAM    =   4  ; /* Character-stream, PLP            */
+DT_METAFILE      =   5  ; /* Metafile, VDM                    */
+DT_DISPFILE      =   6  ; /* Display-file                     */
+;
+; Curve Capabilities
+CC_NONE          =   0  ; /* Curves not supported             */
+CC_CIRCLES       =   1  ; /* Can do circles                   */
+CC_PIE           =   2  ; /* Can do pie wedges                */
+CC_CHORD         =   4  ; /* Can do chord arcs                */
+CC_ELLIPSES      =   8  ; /* Can do ellipese                  */
+CC_WIDE          =   16 ; /* Can do wide lines                */
+CC_STYLED        =   32 ; /* Can do styled lines              */
+CC_WIDESTYLED    =   64 ; /* Can do wide styled lines         */
+CC_INTERIORS     =   128; /* Can do interiors                 */
+;
+; Line Capabilities
+LC_NONE          =   0  ; /* Lines not supported              */
+LC_POLYLINE      =   2  ; /* Can do polylines                 */
+LC_MARKER        =   4  ; /* Can do markers                   */
+LC_POLYMARKER    =   8  ; /* Can do polymarkers               */
+LC_WIDE          =   16 ; /* Can do wide lines                */
+LC_STYLED        =   32 ; /* Can do styled lines              */
+LC_WIDESTYLED    =   64 ; /* Can do wide styled lines         */
+LC_INTERIORS     =   128; /* Can do interiors                 */
+;
