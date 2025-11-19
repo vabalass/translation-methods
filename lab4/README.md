@@ -1,20 +1,19 @@
-Transliavimo metodai, lab. 4 - Balys Žalneravičius
+## Transliavimo Metodai, 4 Lab. Darbas
 
-## Semantinės analizės tikslai
+**Autorius:** Balys Žalneravičius
+**Data:** 2025-11-19
 
-- Surasti visas įmanomas programos klaidas, dėl kurių sutransliuota programa gali būti netinkama.
-    - neapibrėžti kintamieji, tipai
-    - tipų suderinamumo klaidos, kurios gali būti aptiktos statiškai
-    - neinicializuoti kintamieji, nepasiekiami kodo fragmentai
-- Surinkti naudingą informaciją sekantiems transliavimo etapams
-    - visų išraiškų tipai
-    - atminties kiekiai, reikalingi duomenims
+Programa atlieka supaprastintą C kodo analizę.
 
-Rezultatas: klaidų sąrašas arba patikrintą AST, jeigu viskas gerai.
+### Failų Paskirtis:
 
-Darbo planas:
-1. padaryti, kad skaneris gražintų AST į failą
-2. Primti AST semantiniame analizatoriuje
-3. Patikrinti jį
+* **`compiler.py`:** Programos paleidimui. Savyje turi skanerį ir paleidžia kitus komponentus.
+* **`parser.py`:** Sintaksinis analizatorius. Grąžina abstraktųjį sintaksės medį (AST).
+* **`semantic_analyzer.py`:** Semantinis analizatorius. Tikrina kintamųjų deklaracijas, tipų suderinamumą ir pildo simbolių lentelę.
 
+### Paleidimas:
 
+Programą paleiskite iš to paties katalogo, kuriame yra `compiler.py` failas:
+
+```powershell
+python .\compiler.py .\sample.c
